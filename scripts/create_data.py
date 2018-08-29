@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # Create dataset for toy linear regression problems
 # Convert dataset to TFRecords format
 

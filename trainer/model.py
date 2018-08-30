@@ -1,15 +1,14 @@
 import tensorflow as tf
 import numpy
+import matplotlib.pyplot as plt
+
 rng = numpy.random
 
 tf.logging.set_verbosity(tf.logging.INFO)
 from tensorflow.contrib.learn.python.learn.estimators.model_fn import ModeKeys as Modes
 
 
-def read_and_decode(filename_queue):
-    reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue)
-
+def decode(serialized_example):
     features = tf.parse_single_example(
         serialized_example,
         features={
@@ -23,49 +22,56 @@ def read_and_decode(filename_queue):
     return x, y
 
 
-def input_fn(filename, batch_size=100):
-    filename_queue = tf.train.string_input_producer([filename])
+def inputs(batch_size=100, num_epochs=100):
+    filename = '../data/train.tfrecords'
 
-    x, y = read_and_decode(filename_queue)
-    x, y = tf.train.batch(
-        [x, y], batch_size=batch_size,
-        capacity=1000 + 3 * batch_size
-    )
+    with tf.name_scope('input'):
+        dataset = tf.data.TFRecordDataset(filename)
 
-    return {'inputs': x}, y
+        dataset = dataset.map(decode)
+
+        dataset = dataset.shuffle(1000 + 3 * batch_size)
+        dataset = dataset.repeat(num_epochs)
+        dataset = dataset.batch(batch_size)
+
+        iterator = dataset.make_one_shot_iterator()
+
+    return iterator.get_next()
 
 
-def get_input_fn(filename, batch_size=100):
-    return lambda: input_fn(filename, batch_size)
+def train(batch_size=100, num_epochs=500, learning_rate=0.01):
+    # Inputs
+    x_batch, y_batch = inputs(batch_size=batch_size, num_epochs=num_epochs)
 
-
-def regression_model(features, labels, mode):
-    # Input layer
-    x = features['inputs']
-    y = labels
-
-    # Model weights
-    W = tf.Variable(rng.randn(), name='weight')
-    b = tf.Variable(rng.randn(), name='bias')
+    # Model weights initialisation
+    W = tf.Variable(rng.randn(), name="weight")
+    b = tf.Variable(rng.randn(), name="bias")
 
     # Linear model
-    pred = tf.add(tf.multiply(x, W), b)
+    pred = tf.add(tf.multiply(x_batch, W), b)
 
-    # Train
-    loss = tf.reduce_sum(tf.pow(pred-y, 2))/(2*x.shape[0])
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
-    train_op = optimizer.minimize(loss)
-    return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
+    # Mean squared error cost function
+    cost = tf.reduce_sum(tf.pow(pred-y_batch, 2))/(2*batch_size)
+
+    # Optimization by gradient descent
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+
+    # Initialize variables
+    init_op = tf.group(tf.global_variables_initializer(),
+                       tf.local_variables_initializer())
+
+    with tf.Session() as sess:
+        sess.run(init_op)
+
+        try:
+            step = 0
+            while True:
+                _, cost_val, x, y = sess.run([optimizer, cost, x_batch, y_batch])
+
+                step += 1
+
+        except tf.errors.OutOfRangeError:
+            print('Done training')
 
 
-def build_estimator(model_dir):
-    return tf.estimator.Estimator(
-        model_fn=regression_model,
-        model_dir=model_dir,
-        config=tf.contrib.learn.RunConfig(save_checkpoints_secs=60)
-    )
-
-
-def serving_input_fn():
-    inputs = {'inputs': tf.placeholder(tf.float32)}
-    return tf.estimator.export.ServingInputReceiver(inputs, inputs)
+train()

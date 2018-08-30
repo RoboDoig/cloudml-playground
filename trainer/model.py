@@ -4,6 +4,7 @@ import numpy
 rng = numpy.random
 
 tf.logging.set_verbosity(tf.logging.INFO)
+print(tf.data.TFRecordDataset)
 
 
 def decode(serialized_example):

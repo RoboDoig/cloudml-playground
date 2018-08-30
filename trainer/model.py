@@ -21,8 +21,6 @@ def decode(serialized_example):
 
 
 def inputs(filename, batch_size=100, num_epochs=100):
-    filename = '../data/train.tfrecords'
-
     with tf.name_scope('input'):
         dataset = tf.data.TFRecordDataset(filename)
 

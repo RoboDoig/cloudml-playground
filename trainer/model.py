@@ -22,7 +22,7 @@ def decode(serialized_example):
     return x, y
 
 
-def inputs(batch_size=100, num_epochs=100):
+def inputs(filename, batch_size=100, num_epochs=100):
     filename = '../data/train.tfrecords'
 
     with tf.name_scope('input'):
@@ -39,9 +39,9 @@ def inputs(batch_size=100, num_epochs=100):
     return iterator.get_next()
 
 
-def train(batch_size=100, num_epochs=500, learning_rate=0.01):
+def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
     # Inputs
-    x_batch, y_batch = inputs(batch_size=batch_size, num_epochs=num_epochs)
+    x_batch, y_batch = inputs(filename, batch_size=batch_size, num_epochs=num_epochs)
 
     # Model weights initialisation
     W = tf.Variable(rng.randn(), name="weight")
@@ -72,6 +72,3 @@ def train(batch_size=100, num_epochs=500, learning_rate=0.01):
 
         except tf.errors.OutOfRangeError:
             print('Done training')
-
-
-train()

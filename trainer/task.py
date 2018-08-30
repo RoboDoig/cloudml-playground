@@ -9,13 +9,19 @@ FLAGS = None
 
 
 def main(_):
-    model.train(batch_size=FLAGS.batch_size,
+    model.train(os.path.join(FLAGS.directory, 'train.tfrecords'),
+                batch_size=FLAGS.batch_size,
                 num_epochs=FLAGS.num_epochs,
                 learning_rate=FLAGS.learning_rate)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--directory',
+        help='Bucket to find training data',
+        default='../data/'
+    )
     parser.add_argument(
         '--batch_size',
         type=float,

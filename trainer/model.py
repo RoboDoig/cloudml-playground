@@ -5,6 +5,11 @@ rng = numpy.random
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
+DATA_DIR = None
+BATCH_SIZE = None
+NUM_EPOCHS = None
+LEARNING_RATE = None
+
 
 def decode(serialized_example):
     features = tf.parse_single_example(
@@ -20,24 +25,24 @@ def decode(serialized_example):
     return x, y
 
 
-def inputs(filename, batch_size=100, num_epochs=100):
+def inputs():
     with tf.name_scope('input'):
-        dataset = tf.data.TFRecordDataset(filename)
+        dataset = tf.data.TFRecordDataset(DATA_DIR)
 
         dataset = dataset.map(decode)
 
-        dataset = dataset.shuffle(1000 + 3 * batch_size)
-        dataset = dataset.repeat(num_epochs)
-        dataset = dataset.batch(batch_size)
+        dataset = dataset.shuffle(1000 + 3 * BATCH_SIZE)
+        dataset = dataset.repeat(NUM_EPOCHS)
+        dataset = dataset.batch(BATCH_SIZE)
 
         iterator = dataset.make_one_shot_iterator()
 
     return iterator.get_next()
 
 
-def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
+def train():
     # Inputs
-    x_batch, y_batch = inputs(filename, batch_size=batch_size, num_epochs=num_epochs)
+    x_batch, y_batch = inputs()
 
     # Model weights initialisation
     W = tf.Variable(rng.randn(), name="weight")
@@ -47,10 +52,10 @@ def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
     pred = tf.add(tf.multiply(x_batch, W), b)
 
     # Mean squared error cost function
-    cost = tf.reduce_sum(tf.pow(pred-y_batch, 2))/(2*batch_size)
+    cost = tf.reduce_sum(tf.pow(pred-y_batch, 2))/(2*BATCH_SIZE)
 
     # Optimization by gradient descent
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+    optimizer = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cost)
 
     # Initialize variables
     init_op = tf.group(tf.global_variables_initializer(),

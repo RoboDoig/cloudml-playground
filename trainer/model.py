@@ -4,6 +4,7 @@ import numpy
 rng = numpy.random
 
 tf.logging.set_verbosity(tf.logging.INFO)
+logs_path = './tmp/example/'
 
 
 def decode(serialized_example):
@@ -36,6 +37,7 @@ def inputs(filename, batch_size=100, num_epochs=100):
 
 
 def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
+
     # Inputs
     x_batch, y_batch = inputs(filename, batch_size=batch_size, num_epochs=num_epochs)
 
@@ -48,6 +50,7 @@ def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
 
     # Mean squared error cost function
     cost = tf.reduce_sum(tf.pow(pred-y_batch, 2))/(2*batch_size)
+    train_cost_summary = tf.summary.scalar("train_cost", cost)
 
     # Optimization by gradient descent
     optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
@@ -55,6 +58,9 @@ def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
     # Initialize variables
     init_op = tf.group(tf.global_variables_initializer(),
                        tf.local_variables_initializer())
+
+    # create a log writer
+    writer = tf.summary.FileWriter(logs_path, graph=tf.get_default_graph())
 
     with tf.Session() as sess:
         sess.run(init_op)
@@ -64,6 +70,7 @@ def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
             while True:
                 _, cost_val, x, y = sess.run([optimizer, cost, x_batch, y_batch])
 
+                writer.add_summary(cost_val, step)
                 step += 1
 
         except tf.errors.OutOfRangeError:

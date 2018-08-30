@@ -10,6 +10,7 @@ FLAGS = None
 
 def main(_):
     model.train(os.path.join(FLAGS.data_dir, 'train.tfrecords'),
+                FLAGS.output_dir,
                 batch_size=FLAGS.batch_size,
                 num_epochs=FLAGS.num_epochs,
                 learning_rate=FLAGS.learning_rate)

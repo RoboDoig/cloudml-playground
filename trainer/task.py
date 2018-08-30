@@ -20,7 +20,8 @@ if __name__ == '__main__':
     parser.add_argument(
         '--data_dir',
         help='Bucket to find training data',
-        required=True
+        # required=True
+        default='../data/'
     )
     parser.add_argument(
         '--batch_size',

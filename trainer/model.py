@@ -68,9 +68,9 @@ def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
         try:
             step = 0
             while True:
-                _, cost_val, x, y = sess.run([optimizer, cost, x_batch, y_batch])
+                _, cost_val, x, y, cost_summary = sess.run([optimizer, cost, x_batch, y_batch, train_cost_summary])
 
-                writer.add_summary(cost_val, step)
+                writer.add_summary(cost_summary, step)
                 step += 1
 
         except tf.errors.OutOfRangeError:

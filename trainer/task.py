@@ -18,9 +18,9 @@ def main(_):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--directory',
+        '--data_dir',
         help='Bucket to find training data',
-        default='../data/'
+        required=True
     )
     parser.add_argument(
         '--batch_size',

@@ -50,6 +50,8 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
     # Mean squared error cost function
     cost = tf.reduce_sum(tf.pow(pred-y_batch, 2))/(2*batch_size)
     train_cost_summary = tf.summary.scalar("train_cost", cost)
+    train_W_summary = tf.summary.scalar("weight", W)
+    train_b_summary = tf.summary.scalar("bias", b)
 
     # Optimization by gradient descent
     optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
@@ -67,9 +69,18 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
         try:
             step = 0
             while True:
-                _, cost_val, x, y, cost_summary = sess.run([optimizer, cost, x_batch, y_batch, train_cost_summary])
+                _, cost_val, x, y, cost_summary, W_summary, b_summary = sess.run([optimizer,
+                                                                                  cost,
+                                                                                  x_batch,
+                                                                                  y_batch,
+                                                                                  train_cost_summary,
+                                                                                  train_W_summary,
+                                                                                  train_b_summary])
 
                 writer.add_summary(cost_summary, step)
+                writer.add_summary(W_summary, step)
+                writer.add_summary(b_summary, step)
+
                 step += 1
 
         except tf.errors.OutOfRangeError:

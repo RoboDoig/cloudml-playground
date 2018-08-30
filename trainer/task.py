@@ -8,8 +8,11 @@ from trainer import model
 FLAGS = None
 
 
-def main():
-    model.train()
+def main(_):
+    model.train(os.path.join(FLAGS.directory, 'train.tfrecords'),
+                batch_size=FLAGS.batch_size,
+                num_epochs=FLAGS.num_epochs,
+                learning_rate=FLAGS.learning_rate)
 
 
 if __name__ == '__main__':
@@ -38,10 +41,5 @@ if __name__ == '__main__':
         help='Specify gradient descent learning rate'
     )
 
-    args = parser.parse_args()
-    model.DATA_DIR = os.path.join(args.data_dir, 'train.tfrecords')
-    model.BATCH_SIZE = args.batch_size
-    model.NUM_EPOCHS = args.num_epochs
-    model.LEARNING_RATE = args.learning_rate
-
-    main()
+    FLAGS, unparsed = parser.parse_known_args()
+    tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)

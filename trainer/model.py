@@ -1,11 +1,9 @@
 import tensorflow as tf
 import numpy
-import matplotlib.pyplot as plt
 
 rng = numpy.random
 
 tf.logging.set_verbosity(tf.logging.INFO)
-from tensorflow.contrib.learn.python.learn.estimators.model_fn import ModeKeys as Modes
 
 
 def decode(serialized_example):

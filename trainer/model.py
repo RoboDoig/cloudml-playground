@@ -1,10 +1,10 @@
 import tensorflow as tf
 import numpy
+import matplotlib.pyplot as plt
 
 rng = numpy.random
 
 tf.logging.set_verbosity(tf.logging.INFO)
-logs_path = './tmp/example/'
 
 
 def decode(serialized_example):
@@ -21,7 +21,7 @@ def decode(serialized_example):
     return x, y
 
 
-def inputs(filename, batch_size=100, num_epochs=100):
+def inputs(filename, batch_size, num_epochs):
     with tf.name_scope('input'):
         dataset = tf.data.TFRecordDataset(filename)
 
@@ -36,7 +36,7 @@ def inputs(filename, batch_size=100, num_epochs=100):
     return iterator.get_next()
 
 
-def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
+def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
 
     # Inputs
     x_batch, y_batch = inputs(filename, batch_size=batch_size, num_epochs=num_epochs)
@@ -60,7 +60,7 @@ def train(filename, batch_size=100, num_epochs=500, learning_rate=0.01):
                        tf.local_variables_initializer())
 
     # create a log writer
-    writer = tf.summary.FileWriter(logs_path, graph=tf.get_default_graph())
+    writer = tf.summary.FileWriter(log_dir, graph=tf.get_default_graph())
 
     with tf.Session() as sess:
         sess.run(init_op)

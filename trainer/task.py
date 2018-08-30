@@ -24,6 +24,12 @@ if __name__ == '__main__':
         default='../data/'
     )
     parser.add_argument(
+        '--output_dir',
+        help='where to store logs',
+        # required=True
+        default='./tmp/example/'
+    )
+    parser.add_argument(
         '--batch_size',
         type=float,
         default=100,
@@ -38,7 +44,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--learning_rate',
         type=float,
-        default=100,
+        default=0.1,
         help='Specify gradient descent learning rate'
     )
 

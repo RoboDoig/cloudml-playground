@@ -3,7 +3,7 @@ import numpy
 
 rng = numpy.random
 
-tf.logging.set_verbosity(tf.logging.INFO)
+# tf.logging.set_verbosity(tf.logging.INFO)
 
 
 def decode(serialized_example):

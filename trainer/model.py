@@ -88,3 +88,4 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
             print('Done training')
 
         print('Final gradient: ', sess.run(W))
+        writer.close()

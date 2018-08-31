@@ -78,9 +78,13 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
                                                                                   train_W_summary,
                                                                                   train_b_summary])
 
-                writer.add_summary(cost_summary, step)
-                writer.add_summary(W_summary, step)
-                writer.add_summary(b_summary, step)
+                # writer.add_summary(cost_summary, step)
+                # writer.add_summary(W_summary, step)
+                # writer.add_summary(b_summary, step)
+
+                # c = sess.run(cost_val)
+                summary = tf.Summary(value=[tf.Summary.Value(tag='train', simple_value=cost_val)])
+                writer.add_summary(summary, step)
 
                 step += 1
 

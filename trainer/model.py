@@ -39,6 +39,7 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
 
     # Inputs
     x_batch, y_batch = inputs(filename, batch_size=batch_size, num_epochs=num_epochs)
+    print(x_batch)
 
     # Model weights initialisation
     W = tf.Variable(rng.randn(), name="weight")

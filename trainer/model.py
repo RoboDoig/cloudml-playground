@@ -39,7 +39,6 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
 
     # Inputs
     x_batch, y_batch = inputs(filename, batch_size=batch_size, num_epochs=num_epochs)
-    print(x_batch)
 
     # Model weights initialisation
     W = tf.Variable(rng.randn(), name="weight")
@@ -63,6 +62,7 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
 
     # create a log writer
     writer = tf.summary.FileWriter(log_dir, graph=tf.get_default_graph())
+    print('Writing summary to:', log_dir)
 
     with tf.Session() as sess:
         sess.run(init_op)
@@ -87,3 +87,5 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
 
         except tf.errors.OutOfRangeError:
             print('Done training')
+
+        print('Final gradient: ', sess.run(W))

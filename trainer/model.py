@@ -80,6 +80,7 @@ def train(filename, log_dir, batch_size=100, num_epochs=10, learning_rate=0.1):
                 writer.add_summary(cost_summary, step)
                 writer.add_summary(W_summary, step)
                 writer.add_summary(b_summary, step)
+                print(cost_val)
 
                 step += 1
 
